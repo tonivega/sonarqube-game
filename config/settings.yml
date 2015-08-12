@@ -1,0 +1,15 @@
+#database:
+#    driver: pdo_mysql
+#    host: localhost
+#    dbname: database_name
+#    user: root
+#    password: password
+#    charset: utf8
+
+app:
+  sonarqube:
+    baseAddress: http://sonarqube.domain.com/
+    apiUsername: avega
+    apiPassword: changeme
+    resourceID: 869
+
