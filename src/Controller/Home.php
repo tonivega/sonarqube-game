@@ -3,6 +3,7 @@
 namespace Privalia\SQHeal\Controller;
 
 use Privalia\SQHeal\Model\SonarQube\API\Issue;
+use Privalia\SQHeal\Model\SonarQube\API\User;
 
 class Home extends Base {
 
@@ -26,6 +27,9 @@ class Home extends Base {
 
         $this->controller->get('/api/issue.count.delta.json'  , [$this, 'issue_count_delta_json'])
             ->bind('issue.count.delta.json');
+
+        $this->controller->get('/api/groups.json'  , [$this, 'groups_json'])
+            ->bind('groups.json');
     }
 
     protected $app = null;
@@ -64,6 +68,15 @@ class Home extends Base {
         return $this->app->json($result);
     }
 
+    public function groups_json(){
+
+        $issueModel = new Issue($this->app['config']['app']['sonarqube']);
+        $resourceID = $this->app['config']['app']['sonarqube']['resourceID'];
+
+        $result = $issueModel->getGroupFixesByDateRange(new \DateTime(), new \DateTime());
+
+        return $this->app->json($result);
+    }
 }
 
 

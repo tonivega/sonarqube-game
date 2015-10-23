@@ -132,7 +132,7 @@ class Issue {
         }
 
         foreach($status as $serverity => &$weekDay){
-            $initialCount = current($weekDay)['count'] . 'xxz';
+            $initialCount = current($weekDay)['count'];
             foreach ($weekDay as &$day){
                 $day['weekDelta'] = $day['count'] - $initialCount;
             }
@@ -152,11 +152,46 @@ class Issue {
         foreach($weekDays as $weekDayNumber => &$resultArray) {
             foreach ($issueSeverity as $severity => $key) {
                 if( isset($status[$severity][$weekDayNumber])){
-                    $resultArray[$severity] = $status[$severity][$weekDayNumber]['weekDelta'];
+                    $resultArray[$severity] = $status[$severity][$weekDayNumber]['count'];
                 }
             }
         }
 
         return array_values($weekDays);
+    }
+
+    public function getGroupFixesByDateRange(\DateTime $start, \DateTime $end){
+
+        $apiURL = '%sapi/issues/search?assignees=%s&resolutions=FIXED&resolved=true&sort=CLOSE_DATE&hideRules=true&pageSize=4096';
+
+        //$apiURL = '%sapi/timemachine/index?resource=%d&metrics=%s&fromDateTime=%s&toDateTime=%s';
+
+        $baseAddress    = $this->config['baseAddress'];
+        $apiUsername    = $this->config['apiUsername'];
+        $apiPassword    = $this->config['apiPassword'];
+
+        $client = new \GuzzleHttp\Client();
+        $status = [];
+
+        $apiURLget = sprintf(
+            $apiURL,
+            $baseAddress,
+            'gcosin,avega'
+//            $resourceID,
+//            $key,
+//            $start->format(\DateTime::ISO8601),
+//            $end->format(\DateTime::ISO8601)
+        );
+
+        $res = $client->get($apiURLget, ['auth' => [$apiUsername, $apiPassword]]);
+
+        if ($res->getStatusCode() != 200) {
+            throw new BadRequestHttpException('Error connecting to SonarQube');
+        };
+
+        $result = json_decode($res->getBody());
+
+        var_dump($result);
+        die();
     }
 }
